@@ -1,0 +1,13 @@
+package com.igorwolf.parkingcontrol.repositories;
+
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.igorwolf.parkingcontrol.entities.ParkingSpot;
+
+@Repository
+public interface ParkingSpotRepository extends JpaRepository<ParkingSpot, UUID>{
+
+}
