@@ -3,6 +3,8 @@ package com.igorwolf.parkingcontrol.controllers;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +45,7 @@ public class ParkingSpotController {
 							+ "\nApartamento: " + parkingSpot.getApartment()
 							+ "\nPlaca: " + parkingSpot.getLicensePlateCar();
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(message);
+		return ResponseEntity.status(HttpStatus.CREATED).body(message); 
 	}
 	
 	@GetMapping
@@ -50,7 +53,22 @@ public class ParkingSpotController {
 		return ResponseEntity.status(HttpStatus.OK).body(parkingSpotService.findAll());
 	}
 	
+	
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<Object> findById(@PathVariable UUID id){
+		Optional<ParkingSpot> result = parkingSpotService.findById(id);
+		if (!result.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vaga não encontrada.");
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(result.get());
+		
+	}
+	
 }
+
+
+
+
 
 
 
