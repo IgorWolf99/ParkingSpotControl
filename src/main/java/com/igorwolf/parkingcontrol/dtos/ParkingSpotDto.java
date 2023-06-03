@@ -1,5 +1,6 @@
 package com.igorwolf.parkingcontrol.dtos;
 
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -25,11 +26,7 @@ public class ParkingSpotDto {
     private String apartment;
     
     
-    
-    
-    
-    
-    
+  
 
 	public String getParkingSpotNumber() {
 		return parkingSpotNumber;
