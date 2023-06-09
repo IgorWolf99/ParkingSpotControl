@@ -3,6 +3,8 @@ package com.igorwolf.parkingcontrol.entities;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.ColumnTransformer;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,6 +23,7 @@ public class ParkingSpot {
     private String parkingSpotNumber;
     
     @Column(name = "placa_carro",nullable = false, unique = true, length = 7)
+    @ColumnTransformer(write = "UPPER(?)")
     private String licensePlateCar;
     
     @Column(name = "modelo_carro",nullable = false, length = 70)

@@ -9,5 +9,10 @@ import com.igorwolf.parkingcontrol.entities.ParkingSpot;
 
 @Repository
 public interface ParkingSpotRepository extends JpaRepository<ParkingSpot, UUID>{
-
+	
+	boolean existsByParkingSpotNumber(String parkingSpotNumber);
+	boolean existsByApartment(String apartment);
+	boolean existsByLicensePlateCar(String liscencePlateCar);
+	
+	
 }

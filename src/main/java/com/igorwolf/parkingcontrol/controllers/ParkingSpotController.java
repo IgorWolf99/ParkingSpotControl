@@ -33,8 +33,19 @@ public class ParkingSpotController {
 	@Autowired
 	public ParkingSpotService parkingSpotService;
 	
+	
 	@PostMapping
 	public ResponseEntity<Object> saveParkingSpot(@RequestBody @Valid ParkingSpotDto parkingSpotDto){
+		if(parkingSpotService.existsByLiscencePlateCar(parkingSpotDto.getLicensePlateCar())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Placa já registrada.");
+		}
+		if(parkingSpotService.existsByParkingSpotNumber(parkingSpotDto.getParkingSpotNumber())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Vaga já utilizada.");
+		}
+		if(parkingSpotService.existsByApartment(parkingSpotDto.getApartment())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Apartamento já registrado.");
+		}
+		
 		var parkingSpot = new ParkingSpot();
 		BeanUtils.copyProperties(parkingSpotDto, parkingSpot);
 		parkingSpot.setRegistrationDate(LocalDateTime.now(ZoneId.of("UTC")));
@@ -48,6 +59,7 @@ public class ParkingSpotController {
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(message); 
 	}
+	
 	
 	@GetMapping
 	public ResponseEntity<List<ParkingSpot>> findAllParkingSpots(){
@@ -70,7 +82,6 @@ public class ParkingSpotController {
 		if (!parkingSpotOptional.isPresent()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vaga não encontrada.");
 		}
-		else {
 			ParkingSpot parkingSpot = parkingSpotOptional.get();
 			parkingSpotService.delete(parkingSpot);
 			
@@ -78,8 +89,6 @@ public class ParkingSpotController {
 					+ "Vaga nº: " +parkingSpot.getParkingSpotNumber()
 					+ " - Responsavel: " + parkingSpot.getResponsibleName();
 			return ResponseEntity.status(HttpStatus.OK).body(message);
-		}
-		
 	}
 	
 	
