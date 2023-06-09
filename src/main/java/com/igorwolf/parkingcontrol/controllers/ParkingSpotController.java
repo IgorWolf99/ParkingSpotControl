@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,7 +44,7 @@ public class ParkingSpotController {
 							+ "Vaga nº: " + parkingSpot.getParkingSpotNumber()
 							+ "\nResponsavel: " + parkingSpot.getResponsibleName()
 							+ "\nApartamento: " + parkingSpot.getApartment()
-							+ "\nPlaca: " + parkingSpot.getLicensePlateCar();
+							+ "\nPlaca do carro: " + parkingSpot.getLicensePlateCar();
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(message); 
 	}
@@ -61,8 +62,26 @@ public class ParkingSpotController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vaga não encontrada.");
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(result.get());
+	}
+	
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity<Object> deleteParkingSpot(@PathVariable UUID id){
+		Optional<ParkingSpot> parkingSpotOptional= parkingSpotService.findById(id);
+		if (!parkingSpotOptional.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vaga não encontrada.");
+		}
+		else {
+			ParkingSpot parkingSpot = parkingSpotOptional.get();
+			parkingSpotService.delete(parkingSpot);
+			
+			String message = "VAGA DELETADA\n"
+					+ "Vaga nº: " +parkingSpot.getParkingSpotNumber()
+					+ " - Responsavel: " + parkingSpot.getResponsibleName();
+			return ResponseEntity.status(HttpStatus.OK).body(message);
+		}
 		
 	}
+	
 	
 }
 

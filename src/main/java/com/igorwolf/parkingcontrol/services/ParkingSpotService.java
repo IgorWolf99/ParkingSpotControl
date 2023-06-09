@@ -17,12 +17,7 @@ public class ParkingSpotService {
 	@Autowired	
 	public ParkingSpotRepository parkingSpotRepository;
 	
-	
-	@Transactional
-	public ParkingSpot save(ParkingSpot parkingSpot) {
-		return parkingSpotRepository.save(parkingSpot);
-	}
-	
+
 	public List<ParkingSpot> findAll(){
 		return parkingSpotRepository.findAll();
 	}
@@ -31,6 +26,14 @@ public class ParkingSpotService {
 		return parkingSpotRepository.findById(id);
 	}
 	
+	@Transactional
+	public ParkingSpot save(ParkingSpot parkingSpot) {
+		return parkingSpotRepository.save(parkingSpot);
+	}
 	
+	@Transactional
+	public void delete(ParkingSpot parkingSpot) {
+		parkingSpotRepository.delete(parkingSpot);
+	}
 	
 }
