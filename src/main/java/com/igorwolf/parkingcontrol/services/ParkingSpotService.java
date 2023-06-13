@@ -46,4 +46,15 @@ public class ParkingSpotService {
 	public boolean existsByLiscencePlateCar(String liscencePlateCar) {
 		return parkingSpotRepository.existsByLicensePlateCar(liscencePlateCar);
 	}
+
+	
+	public boolean existsByLicensePlateCarExceptId(String licensePlateCar, UUID id) {
+        return parkingSpotRepository.existsByLicensePlateCarAndIdNot(licensePlateCar, id);
+    }
+    public boolean existsByParkingSpotNumberExceptId(String parkingSpotNumber, UUID id) {
+        return parkingSpotRepository.existsByParkingSpotNumberAndIdNot(parkingSpotNumber, id);
+    }
+    public boolean existsByApartmentExceptId(String apartment, UUID id) {
+        return parkingSpotRepository.existsByApartmentAndIdNot(apartment, id);
+    }
 }

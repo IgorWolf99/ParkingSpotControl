@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,7 +56,7 @@ public class ParkingSpotController {
 							+ "Vaga nº: " + parkingSpot.getParkingSpotNumber()
 							+ "\nResponsavel: " + parkingSpot.getResponsibleName()
 							+ "\nApartamento: " + parkingSpot.getApartment()
-							+ "\nPlaca do carro: " + parkingSpot.getLicensePlateCar();
+							+ "\nPlaca do carro: " + parkingSpot.getLicensePlateCar().toUpperCase();
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(message); 
 	}
@@ -91,14 +92,37 @@ public class ParkingSpotController {
 			return ResponseEntity.status(HttpStatus.OK).body(message);
 	}
 	
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<Object> updateParkingSpot(@PathVariable UUID id,
+													@RequestBody @Valid ParkingSpotDto dto){
+		Optional<ParkingSpot> parkingSpotOptional = parkingSpotService.findById(id);
+		if (!parkingSpotOptional.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Registro não encontrado.");
+		}
+		
+		// Verificação de dados ja existentes exceto do id que esta sendo editado.
+		if (parkingSpotService.existsByLicensePlateCarExceptId(dto.getLicensePlateCar(), id)) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT).body("Placa já registrada.");
+	    }
+	    if (parkingSpotService.existsByParkingSpotNumberExceptId(dto.getParkingSpotNumber(), id)) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT).body("Vaga já utilizada.");
+	    }
+	    if (parkingSpotService.existsByApartmentExceptId(dto.getApartment(), id)) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT).body("Apartamento já registrado.");
+	    }
+		
+		var parkingSpot = new ParkingSpot();
+		BeanUtils.copyProperties(dto, parkingSpot);
+		parkingSpot.setId(parkingSpotOptional.get().getId());
+		parkingSpot.setRegistrationDate(parkingSpotOptional.get().getRegistrationDate());
+		
+		parkingSpotService.save(parkingSpot);
+		String message = "VAGA ATUALIZADA.\n" 
+				+ "Id: " + parkingSpot.getId()
+				+ "\nResponsavel: " + parkingSpot.getResponsibleName();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(message);
+	}
 	
 }
-
-
-
-
-
-
-
-
 
