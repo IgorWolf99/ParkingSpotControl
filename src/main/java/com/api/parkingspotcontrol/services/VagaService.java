@@ -168,4 +168,49 @@ public class VagaService {
         logger.info("Método > deleteOcupante() | Registro deletado com sucesso. Vaga: {} - Ocupante: {}", vaga.getVaga(), ocupante);
     }
 
+    public Object atualizarRegistro(UUID id, OcupanteVagaDTO ocupanteVagaDTO)  {
+        Optional<Ocupante> ocupanteOptional = ocupanteRepository.findById(id);
+        if (ocupanteOptional.isEmpty()) {
+            logger.error("Método > findById() in atualizarRegistro() | Ocupante não encontrado - ID: {} ", id);
+            throw new OcupanteNaoEncontradoException("Ocupante não encontrado");
+        }
+
+        var ocupante = ocupanteOptional.get();
+        BeanUtils.copyProperties(ocupanteVagaDTO, ocupante);
+        ocupante.setRegistroVaga(ocupanteOptional.get().getRegistroVaga());
+
+        Optional<Vaga> vagaAtualOptional = vagaRepository.findVagaByOcupante(ocupante.getId());
+        var vagaAtual = vagaAtualOptional.get();
+
+        Optional<Vaga> vagaNovaOptional = vagaRepository.findByVaga(ocupanteVagaDTO.vaga().toUpperCase());
+        if (vagaNovaOptional.isEmpty()) {
+            logger.error("Método > findById() in atualizarRegistro() | Essa vaga não Existe - Vaga: {} ", ocupanteVagaDTO.vaga().toUpperCase());
+            throw new VagaNaoEncontradaException("Vaga não Encontrada");
+        }
+        var vagaNova = vagaNovaOptional.get();
+
+        // Verificações
+        // Verifica se o ocupante associado a vaga é o mesmo
+        if (vagaNova.isDisponivel() || vagaNova.getOcupante().getId().equals(ocupante.getId())) {
+            controleDeVagasService.desatribuirVagaOcupante(vagaAtual, ocupante);
+            controleDeVagasService.atribuirVagaOcupante(vagaNova, ocupante);
+        } else {
+            logger.error("Método > existsByVagaExceptId() in atualizarRegistro() | Vaga não disponivel - Vaga: {} ", vagaNova.getVaga());
+            throw new VagaJaOcupadaException("Essa vaga não está disponivel");
+        }
+
+        // Verificações dados unicos
+        if (ocupanteRepository.existsByCpfAndIdNot(ocupanteVagaDTO.cpf(), ocupanteOptional.get().getId())) {
+            logger.error("Método > existsByCpfExceptId() in atualizarRegistro() | CPF já registrado - CPF: {}", ocupanteVagaDTO.cpf());
+            throw new CpfJaRegistradoException("Cpf já está registrado");
+        }
+        if (ocupanteRepository.existsByPlacaVeiculoAndIdNot(ocupanteVagaDTO.placaVeiculo().toUpperCase(), ocupanteOptional.get().getId())) {
+            logger.error("Método > existsByPlacaVeiculoExceptId() in atualizarRegistro() | Placa do Veiculo já registrada - Placa: {}", ocupanteVagaDTO.placaVeiculo());
+            throw new PlacaVeiculoJaRegistradaException("Placa do veiculo já registrada");
+        }
+
+        logger.info("Método > atualizarRegistro() | Vaga atualizada com sucesso - Dados atualizados >> {} {}", vagaAtual.getVaga(), ocupante);
+        return vagaRepository.save(vagaAtual);
+    }
+
 }
