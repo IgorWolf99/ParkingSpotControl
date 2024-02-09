@@ -3,6 +3,7 @@ package com.api.parkingspotcontrol.controllers;
 import com.api.parkingspotcontrol.dtos.OcupanteVagaDTO;
 import com.api.parkingspotcontrol.dtos.VagaDTO;
 import com.api.parkingspotcontrol.entities.Vaga;
+import com.api.parkingspotcontrol.exceptions.VagaJaOcupadaException;
 import com.api.parkingspotcontrol.services.ControleDeVagasService;
 import com.api.parkingspotcontrol.services.VagaService;
 import jakarta.validation.Valid;
@@ -77,5 +78,21 @@ public class VagaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(vagaService.saveVaga(vaga));
     }
 
+    @DeleteMapping(value = "/vaga/{id}")
+    public ResponseEntity<Object> deleteVaga(@PathVariable UUID id) {
+        try {
+            vagaService.deleteVaga(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Vaga deletada");
+
+        }catch (VagaJaOcupadaException ex){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        }
+    }
+
+    @DeleteMapping(value = "/ocupante/{id}")
+    public ResponseEntity<Object> deleteOcupante(@PathVariable UUID id){
+        vagaService.deleteOcupante(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Registro deletado");
+    }
 
 }
