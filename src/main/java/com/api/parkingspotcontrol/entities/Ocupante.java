@@ -1,11 +1,13 @@
 package com.api.parkingspotcontrol.entities;
 
+import com.api.parkingspotcontrol.dtos.OcupanteVagaDTO;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnTransformer;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Entity
@@ -41,6 +43,18 @@ public class Ocupante implements Serializable {
     private LocalDateTime registroVaga;
 
     public Ocupante(){}
+
+    public Ocupante(OcupanteVagaDTO ocupanteVagaDTO) {
+        this.nome = ocupanteVagaDTO.nome();
+        this.telefone = ocupanteVagaDTO.telefone();
+        this.cpf = ocupanteVagaDTO.cpf();
+        this.modeloVeiculo = ocupanteVagaDTO.modeloVeiculo();
+        this.placaVeiculo = ocupanteVagaDTO.placaVeiculo();
+        this.corVeiculo = ocupanteVagaDTO.corVeiculo();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        this.registroVaga = LocalDateTime.parse(LocalDateTime.now().format(formatter), formatter);
+    }
 
     public UUID getId() {
         return id;

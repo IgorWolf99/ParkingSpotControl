@@ -1,5 +1,6 @@
 package com.api.parkingspotcontrol.services;
 
+import com.api.parkingspotcontrol.entities.Ocupante;
 import com.api.parkingspotcontrol.entities.Vaga;
 import com.api.parkingspotcontrol.repositories.VagaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +34,15 @@ public class ControleDeVagasService {
         } catch (IOException e) {
             System.out.println("ERRO no INICIAR_DADOS()" + e.getMessage());
         }
+    }
+
+    public void atribuirVagaOcupante(Vaga vaga, Ocupante ocupante) {
+        vaga.setOcupante(ocupante);
+        vaga.setDisponivel(false);
+    }
+
+    public void desatribuirVagaOcupante(Vaga vaga, Ocupante ocupante) {
+        vaga.setOcupante(null);
+        vaga.setDisponivel(true);
     }
 }
