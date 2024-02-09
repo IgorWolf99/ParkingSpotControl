@@ -95,4 +95,9 @@ public class VagaController {
         return ResponseEntity.status(HttpStatus.OK).body("Registro deletado");
     }
 
+    @PutMapping(value = "/ocupante/{id}")
+    public ResponseEntity<Object> updateOcupante(@RequestBody @Valid OcupanteVagaDTO ocupanteVagaDTO, @PathVariable UUID id){
+        return  ResponseEntity.status(HttpStatus.OK).body(vagaService.atualizarRegistro(id,ocupanteVagaDTO));
+    }
+
 }
