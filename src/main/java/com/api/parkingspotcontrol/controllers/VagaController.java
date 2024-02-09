@@ -1,8 +1,11 @@
 package com.api.parkingspotcontrol.controllers;
 
+import com.api.parkingspotcontrol.dtos.OcupanteVagaDTO;
+import com.api.parkingspotcontrol.dtos.VagaDTO;
 import com.api.parkingspotcontrol.entities.Vaga;
 import com.api.parkingspotcontrol.services.ControleDeVagasService;
 import com.api.parkingspotcontrol.services.VagaService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,5 +65,17 @@ public class VagaController {
     public ResponseEntity<Object> vagasDisponiveis(){
         return ResponseEntity.status(HttpStatus.OK).body(vagaService.vagasDisponiveis());
     }
+
+    @PostMapping(value = "/ocupante")
+    public ResponseEntity<Object> registrarOcupanteVaga(@RequestBody @Valid OcupanteVagaDTO ocupanteVagaDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(vagaService.registrarOcupanteVaga(ocupanteVagaDTO));
+    }
+
+    @PostMapping(value = "/vaga/nova-vaga")
+    public ResponseEntity<Object> novaVaga(@Valid @RequestBody VagaDTO nomeVaga) {
+        var vaga = new Vaga(nomeVaga.vaga().toUpperCase());
+        return ResponseEntity.status(HttpStatus.CREATED).body(vagaService.saveVaga(vaga));
+    }
+
 
 }
